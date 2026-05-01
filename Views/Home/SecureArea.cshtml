@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="container mt-5">
+    <h2>Products</h2>
+    <a href="@Url.Action("Create", "Home")"
+       class="btn btn-primary mb-3">Create Product</a>
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.ProductId</h5>
+                        <p class="card-text">@product.Description</p>
+                        <p class="card-text">
+                            $@product.Price.ToString("N2")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
