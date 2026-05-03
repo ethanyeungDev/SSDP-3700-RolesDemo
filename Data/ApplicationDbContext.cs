@@ -14,6 +14,8 @@ namespace RolesDemo.Data
 
         public DbSet<Product> Products { get; set; }
 
+        public DbSet<MyRegisteredUser> MyRegisteredUsers { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Product>(entity =>
