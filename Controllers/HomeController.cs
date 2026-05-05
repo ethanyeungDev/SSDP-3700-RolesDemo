@@ -11,6 +11,11 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly ProductRepository _productRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HomeController"/> class.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="productRepository">The product repository.</param>
     public HomeController(ILogger<HomeController> logger,
                           ProductRepository productRepository)
     {
@@ -18,11 +23,20 @@ public class HomeController : Controller
         _productRepository = productRepository;
     }
 
+    /// <summary>
+    /// Displays the home page.
+    /// </summary>
+    /// <returns>The Index view.</returns>
     public IActionResult Index()
     {
         return View();
     }
 
+    /// <summary>
+    /// Displays the secure area with a sorted list of products.
+    /// Requires the user to be authenticated.
+    /// </summary>
+    /// <returns>The SecureArea view with sorted products.</returns>
     [Authorize]
     public IActionResult SecureArea()
     {
@@ -35,6 +49,11 @@ public class HomeController : Controller
         return View(sortedProducts);
     }
 
+    /// <summary>
+    /// Displays the product creation form with the next available product ID pre-filled.
+    /// Requires the user to be authenticated.
+    /// </summary>
+    /// <returns>The Create view with a new <see cref="Product"/> pre-populated with the next ID.</returns>
     [Authorize]
     public IActionResult Create()
     {
@@ -52,6 +71,12 @@ public class HomeController : Controller
         return View(product);
     }
 
+    /// <summary>
+    /// Handles the product creation form submission.
+    /// Requires the user to be authenticated.
+    /// </summary>
+    /// <param name="product">The product to create.</param>
+    /// <returns>Redirects to SecureArea on success; otherwise redisplays the Create view.</returns>
     [HttpPost]
     [Authorize]
     public IActionResult Create(Product product)
@@ -65,11 +90,19 @@ public class HomeController : Controller
         return View(product);
     }
 
+    /// <summary>
+    /// Displays the privacy policy page.
+    /// </summary>
+    /// <returns>The Privacy view.</returns>
     public IActionResult Privacy()
     {
         return View();
     }
 
+    /// <summary>
+    /// Displays the error page with request diagnostic information.
+    /// </summary>
+    /// <returns>The Error view with an <see cref="ErrorViewModel"/>.</returns>
     [ResponseCache(Duration = 0,
         Location = ResponseCacheLocation.None,
         NoStore = true)]

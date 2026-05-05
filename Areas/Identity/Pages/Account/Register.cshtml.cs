@@ -25,6 +25,15 @@ namespace RolesDemo.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly MyRegisteredUserRepository _myRegisteredUserRepo;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RegisterModel"/> class.
+        /// </summary>
+        /// <param name="userManager">Manages user accounts.</param>
+        /// <param name="userStore">Provides persistent storage for users.</param>
+        /// <param name="signInManager">Handles user sign-in operations.</param>
+        /// <param name="logger">The logger instance.</param>
+        /// <param name="emailSender">Sends confirmation emails.</param>
+        /// <param name="myRegisteredUserRepo">Repository for storing registered user details.</param>
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
@@ -105,12 +114,22 @@ namespace RolesDemo.Areas.Identity.Pages.Account
         }
 
 
+        /// <summary>
+        /// Handles the GET request for the registration page.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after successful registration.</param>
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
+        /// <summary>
+        /// Handles the POST request for the registration form submission.
+        /// Creates a new user account, saves additional user details, and sends a confirmation email.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after successful registration.</param>
+        /// <returns>Redirects to the return URL or confirmation page on success; otherwise redisplays the form.</returns>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -163,6 +182,13 @@ namespace RolesDemo.Areas.Identity.Pages.Account
             return Page();
         }
 
+        /// <summary>
+        /// Creates a new <see cref="IdentityUser"/> instance using the default parameterless constructor.
+        /// </summary>
+        /// <returns>A new <see cref="IdentityUser"/> instance.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when <see cref="IdentityUser"/> cannot be instantiated (e.g., no parameterless constructor).
+        /// </exception>
         private IdentityUser CreateUser()
         {
             try
@@ -177,6 +203,11 @@ namespace RolesDemo.Areas.Identity.Pages.Account
             }
         }
 
+        /// <summary>
+        /// Retrieves the email store from the user store, verifying that email support is available.
+        /// </summary>
+        /// <returns>The <see cref="IUserEmailStore{IdentityUser}"/> from the user store.</returns>
+        /// <exception cref="NotSupportedException">Thrown when the user store does not support email.</exception>
         private IUserEmailStore<IdentityUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)

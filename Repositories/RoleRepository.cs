@@ -8,13 +8,21 @@ public class RoleRepository
 {
     private readonly ApplicationDbContext _context;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RoleRepository"/> class
+    /// and ensures the initial Admin role exists.
+    /// </summary>
+    /// <param name="context">The database context.</param>
     public RoleRepository(ApplicationDbContext context)
     {
         _context = context;
         CreateInitialRole();
     }
 
-    // Return a list of RoleVM records
+    /// <summary>
+    /// Returns a list of all roles as view model records.
+    /// </summary>
+    /// <returns>A list of <see cref="RoleVM"/> representing all roles.</returns>
     public List<RoleVM> GetAllRoles()
     {
         return _context.Roles
@@ -25,7 +33,11 @@ public class RoleRepository
             }).ToList();
     }
 
-    // Return a single RoleVM record.
+    /// <summary>
+    /// Returns a single role view model matching the given role name.
+    /// </summary>
+    /// <param name="roleName">The name of the role to retrieve.</param>
+    /// <returns>A <see cref="RoleVM"/> if found; otherwise <c>null</c>.</returns>
     public RoleVM? GetRole(string roleName)
     {
         var role = _context.Roles
@@ -43,7 +55,11 @@ public class RoleRepository
         return null;
     }
 
-    // Create a new role record.    
+    /// <summary>
+    /// Creates a new role record with the given name.
+    /// </summary>
+    /// <param name="roleName">The name of the role to create.</param>
+    /// <returns><c>true</c> if the role was created successfully; otherwise <c>false</c>.</returns>
     public bool CreateRole(string roleName)
     {
         try
@@ -66,7 +82,9 @@ public class RoleRepository
         }
     }
 
-    // Create initial role.
+    /// <summary>
+    /// Creates the initial Admin role if it does not already exist.
+    /// </summary>
     public void CreateInitialRole()
     {
         const string ADMIN = "Admin";

@@ -15,6 +15,11 @@ namespace RolesDemo.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginModel"/> class.
+        /// </summary>
+        /// <param name="signInManager">Handles user sign-in operations.</param>
+        /// <param name="logger">The logger instance.</param>
         public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
@@ -77,6 +82,11 @@ namespace RolesDemo.Areas.Identity.Pages.Account
             public bool RememberMe { get; set; }
         }
 
+        /// <summary>
+        /// Handles the GET request for the login page.
+        /// Clears any existing external authentication cookie and loads available external login schemes.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after a successful login.</param>
         public async Task OnGetAsync(string returnUrl = null)
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
@@ -94,6 +104,12 @@ namespace RolesDemo.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
+        /// <summary>
+        /// Handles the POST request for the login form submission.
+        /// Authenticates the user with their email and password.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after a successful login.</param>
+        /// <returns>Redirects to the secure area on success, or redisplays the form with an error on failure.</returns>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
