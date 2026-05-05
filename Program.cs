@@ -16,6 +16,7 @@ builder.Services.AddScoped<ProductRepository>();
 builder.Services.AddScoped<RoleRepository>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserRoleRepository>();
+builder.Services.AddScoped<MyRegisteredUserRepository>();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using RolesDemo.Repositories;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -22,13 +23,15 @@ namespace RolesDemo.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly MyRegisteredUserRepository _myRegisteredUserRepo;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            MyRegisteredUserRepository myRegisteredUserRepo)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -36,6 +39,7 @@ namespace RolesDemo.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _myRegisteredUserRepo = myRegisteredUserRepo;
         }
 
         /// <summary>
@@ -63,6 +67,14 @@ namespace RolesDemo.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -113,6 +125,10 @@ namespace RolesDemo.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    _myRegisteredUserRepo.AddRegisteredUser(Input.Email,
+                        Input.FirstName,
+                        Input.LastName);
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
