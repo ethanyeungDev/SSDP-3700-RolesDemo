@@ -42,8 +42,8 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        const string adminEmail = "admintest@mail.com";
-        const string adminPassword = "Password!1";
+        const string adminEmail = "admin@home.com";
+        const string adminPassword = "P@ssw0rd!";
 
         var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
         var myUserRepo = services.GetRequiredService<MyRegisteredUserRepository>();
