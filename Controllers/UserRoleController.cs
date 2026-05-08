@@ -37,6 +37,7 @@ namespace RolesDemo.Controllers
         /// Displays the list of all registered users.
         /// </summary>
         /// <returns>The Index view with a list of <see cref="UserVM"/>.</returns>
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             List<UserVM> users = _userRepo.GetAllUsers();
@@ -49,6 +50,7 @@ namespace RolesDemo.Controllers
         /// <param name="email">Optional preselected user email.</param>
         /// <returns>The Create view.</returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(string? email = null)
         {
             PopulateDropdowns(email, null);
@@ -65,6 +67,7 @@ namespace RolesDemo.Controllers
         /// <returns>Detail view on success; Create view on failure.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(UserRoleVM userRoleVM)
         {
             if (!ModelState.IsValid)
@@ -102,6 +105,7 @@ namespace RolesDemo.Controllers
         /// <returns>The Detail view with status message.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserRole(string email, string roleName)
         {
             bool success = await _userRoleRepo.RemoveUserRoleAsync(email, roleName);
