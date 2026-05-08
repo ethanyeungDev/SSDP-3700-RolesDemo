@@ -1,14 +1,18 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using RolesDemo.Repositories;
 using RolesDemo.ViewModels;
 
 namespace RolesDemo.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UserRoleController : Controller
     {
         private readonly UserRepository _userRepo;
         private readonly UserRoleRepository _userRoleRepo;
         private readonly MyRegisteredUserRepository _myUserRepo;
+        private readonly RoleRepository _roleRepo;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserRoleController"/> class.
@@ -19,11 +23,13 @@ namespace RolesDemo.Controllers
         public UserRoleController(
             UserRepository userRepo,
             UserRoleRepository userRoleRepo,
-            MyRegisteredUserRepository myUserRepo)
+            MyRegisteredUserRepository myUserRepo,
+            RoleRepository roleRepo)
         {
             _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
             _myUserRepo = myUserRepo;
+            _roleRepo = roleRepo;
         }
 
         /// <summary>
@@ -37,48 +43,106 @@ namespace RolesDemo.Controllers
         }
 
         /// <summary>
-        /// Displays the roles assigned to the specified user, showing the user's first and last name.
+        /// Displays the role assignment form.
+        /// </summary>
+        /// <param name="email">Optional preselected user email.</param>
+        /// <returns>The Create view.</returns>
+        [HttpGet]
+        public IActionResult Create(string? email = null)
+        {
+            PopulateDropdowns(email, null);
+            return View(new UserRoleVM
+            {
+                Email = email ?? string.Empty
+            });
+        }
+
+        /// <summary>
+        /// Handles role assignment submission.
+        /// </summary>
+        /// <param name="userRoleVM">The role assignment model.</param>
+        /// <returns>Detail view on success; Create view on failure.</returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(UserRoleVM userRoleVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                PopulateDropdowns(userRoleVM.Email, userRoleVM.Role);
+                return View(userRoleVM);
+            }
+
+            bool success = await _userRoleRepo.AddUserRoleAsync(userRoleVM.Email, userRoleVM.Role);
+            if (!success)
+            {
+                ModelState.AddModelError("", "Unable to assign role to user.");
+                PopulateDropdowns(userRoleVM.Email, userRoleVM.Role);
+                return View(userRoleVM);
+            }
+
+            return await RenderDetailViewAsync(userRoleVM.Email, "Role assigned to user.");
+        }
+
+        /// <summary>
+        /// Displays all roles assigned to the specified user.
         /// </summary>
         /// <param name="email">The email address of the user.</param>
         /// <returns>The Detail view with the user's roles.</returns>
         public async Task<IActionResult> Detail(string email)
         {
-            var (firstName, lastName) = _myUserRepo.GetNameByEmail(email);
-            ViewBag.FirstName = firstName;
-            ViewBag.LastName = lastName;
-            ViewBag.Email = email;
-
-            IList<string> roles = await _userRoleRepo.GetUserRolesAsync(email);
-            return View(roles);
+            return await RenderDetailViewAsync(email);
         }
 
         /// <summary>
-        /// Removes a role from the specified user and reloads the Detail view with a confirmation message.
+        /// Removes a role assignment from the specified user and reloads the detail page.
         /// </summary>
         /// <param name="email">The email address of the user.</param>
-        /// <param name="roleName">The name of the role to remove.</param>
-        /// <returns>The Detail view with an updated role list and a status message.</returns>
-        [HttpPost]
+        /// <param name="roleName">The role to remove.</param>
+        /// <returns>The Detail view with status message.</returns>
+        [HttpGet]
         public async Task<IActionResult> DeleteUserRole(string email, string roleName)
         {
             bool success = await _userRoleRepo.RemoveUserRoleAsync(email, roleName);
+            return success
+                ? await RenderDetailViewAsync(email, "Role removed from user.")
+                : await RenderDetailViewAsync(email, null, "Failed to remove role from user.");
+        }
 
-            if (success)
-            {
-                ViewBag.ConfirmationMessage = "Role removed from user.";
-            }
-            else
-            {
-                ViewBag.ErrorMessage = "Failed to remove role from user.";
-            }
+        private void PopulateDropdowns(string? selectedEmail, string? selectedRole)
+        {
+            var users = _userRepo.GetAllUsers()
+                .Select(u => u.Email)
+                .Where(e => !string.IsNullOrWhiteSpace(e))
+                .ToList();
 
+            var roles = _roleRepo.GetAllRoles()
+                .Select(r => r.RoleName)
+                .Where(r => !string.IsNullOrWhiteSpace(r))
+                .ToList();
+
+            ViewBag.Users = new SelectList(users, selectedEmail);
+            ViewBag.Roles = new SelectList(roles, selectedRole);
+        }
+
+        private async Task<IActionResult> RenderDetailViewAsync(
+            string email,
+            string? confirmationMessage = null,
+            string? errorMessage = null)
+        {
             var (firstName, lastName) = _myUserRepo.GetNameByEmail(email);
-            ViewBag.FirstName = firstName;
-            ViewBag.LastName = lastName;
+            string fullName = $"{firstName} {lastName}".Trim();
+            ViewBag.UserName = string.IsNullOrWhiteSpace(fullName) ? email : fullName;
             ViewBag.Email = email;
+            ViewBag.ConfirmationMessage = confirmationMessage;
+            ViewBag.ErrorMessage = errorMessage;
 
             IList<string> roles = await _userRoleRepo.GetUserRolesAsync(email);
-            return View("Detail", roles);
+            var roleViewModels = roles.Select(role => new RoleVM
+            {
+                RoleName = role
+            }).ToList();
+
+            return View("Detail", roleViewModels);
         }
     }
 }
