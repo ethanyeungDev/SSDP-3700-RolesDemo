@@ -1,0 +1,27 @@
+@model IEnumerable<RolesDemo.ViewModels.UserVM>
+
+@{
+    ViewData["Title"] = "User Roles";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Email</td>
+                <td>
+                    <a asp-action="Detail" asp-route-email="@item.Email">Detail</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

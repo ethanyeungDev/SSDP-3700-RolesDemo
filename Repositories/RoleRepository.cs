@@ -33,6 +33,68 @@ public class RoleRepository
     }
 
     /// <summary>
+    /// Returns a single role view model matching the given role ID.
+    /// </summary>
+    /// <param name="id">The ID of the role to retrieve.</param>
+    /// <returns>A <see cref="RoleVM"/> if found; otherwise <c>null</c>.</returns>
+    public RoleVM? GetRoleById(string id)
+    {
+        var role = _context.Roles.FirstOrDefault(r => r.Id == id);
+
+        if (role != null)
+        {
+            return new RoleVM
+            {
+                Id = role.Id,
+                RoleName = role.Name
+            };
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Determines whether the role with the given ID is currently assigned to any users.
+    /// </summary>
+    /// <param name="roleId">The role ID to check.</param>
+    /// <returns><c>true</c> if the role is assigned to at least one user; otherwise <c>false</c>.</returns>
+    public bool IsRoleAssigned(string roleId)
+    {
+        return _context.UserRoles.Any(ur => ur.RoleId == roleId);
+    }
+
+    /// <summary>
+    /// Deletes the role with the given ID, provided it is not assigned to any users.
+    /// </summary>
+    /// <param name="roleId">The ID of the role to delete.</param>
+    /// <returns><c>true</c> if deleted successfully; <c>false</c> if the role is assigned to users or not found.</returns>
+    public bool DeleteRole(string roleId)
+    {
+        try
+        {
+            if (IsRoleAssigned(roleId))
+            {
+                return false;
+            }
+
+            var role = _context.Roles.FirstOrDefault(r => r.Id == roleId);
+            if (role == null)
+            {
+                return false;
+            }
+
+            _context.Roles.Remove(role);
+            _context.SaveChanges();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting role: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Returns a single role view model matching the given role name.
     /// </summary>
     /// <param name="roleName">The name of the role to retrieve.</param>

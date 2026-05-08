@@ -22,6 +22,24 @@ public class MyRegisteredUserRepository
     }
 
     /// <summary>
+    /// Returns the first and last name of the registered user with the specified email address.
+    /// </summary>
+    /// <param name="email">The email address to look up.</param>
+    /// <returns>A tuple of (FirstName, LastName), or empty strings if not found.</returns>
+    public (string FirstName, string LastName) GetNameByEmail(string email)
+    {
+        var user = _context.MyRegisteredUsers
+            .FirstOrDefault(u => u.Email == email);
+
+        if (user != null)
+        {
+            return (user.FirstName, user.LastName);
+        }
+
+        return (string.Empty, string.Empty);
+    }
+
+    /// <summary>
     /// Adds a new registered user record to the database.
     /// </summary>
     /// <param name="email">The user's email address.</param>

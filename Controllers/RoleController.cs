@@ -65,5 +65,40 @@ namespace RolesDemo.Controllers
             }
             return View(roleVM);
         }
+        /// <summary>
+        /// Displays the role deletion confirmation page.
+        /// </summary>
+        /// <param name="id">The ID of the role to delete.</param>
+        /// <returns>The Delete confirmation view, or NotFound if the role does not exist.</returns>
+        [HttpGet]
+        public ActionResult Delete(string id)
+        {
+            var role = _roleRepo.GetRoleById(id);
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            return View(role);
+        }
+
+        /// <summary>
+        /// Handles the role deletion form submission.
+        /// </summary>
+        /// <param name="id">The ID of the role to delete.</param>
+        /// <returns>Redirects to Index on success; redisplays the Delete view with an error if the role is assigned to users.</returns>
+        [HttpPost, ActionName("Delete")]
+        public ActionResult DeleteConfirmed(string id)
+        {
+            if (_roleRepo.IsRoleAssigned(id))
+            {
+                var role = _roleRepo.GetRoleById(id);
+                ModelState.AddModelError("", "This role is currently assigned to users and cannot be deleted.");
+                return View(role);
+            }
+
+            _roleRepo.DeleteRole(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
