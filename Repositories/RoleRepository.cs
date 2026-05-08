@@ -9,7 +9,7 @@ public class RoleRepository
     private readonly ApplicationDbContext _context;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RoleRepository"/> class
+    /// Initializes a new instance of the <see cref="RoleRepository"/> class.
     /// and ensures the initial Admin role exists.
     /// </summary>
     /// <param name="context">The database context.</param>
