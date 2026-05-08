@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using RolesDemo.Data;
 using RolesDemo.ViewModels;
 
@@ -7,14 +7,17 @@ namespace RolesDemo.Repositories;
 public class RoleRepository
 {
     private readonly ApplicationDbContext _context;
+    private readonly ILogger<RoleRepository> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RoleRepository"/> class and ensures the initial Admin role exists if it does not already exist.
     /// </summary>
     /// <param name="context">The database context.</param>
-    public RoleRepository(ApplicationDbContext context)
+    /// <param name="logger">The logger instance.</param>
+    public RoleRepository(ApplicationDbContext context, ILogger<RoleRepository> logger)
     {
         _context = context;
+        _logger = logger;
         CreateInitialRole();
     }
 
@@ -89,7 +92,7 @@ public class RoleRepository
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error deleting role: {ex.Message}");
+            _logger.LogError(ex, "Error deleting role with ID {RoleId}.", roleId);
             return false;
         }
     }
@@ -137,8 +140,7 @@ public class RoleRepository
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error creating role:" +
-                              $" {ex.Message}");
+            _logger.LogError(ex, "Error creating role {RoleName}.", roleName);
             return false;
         }
     }

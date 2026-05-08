@@ -97,7 +97,14 @@ namespace RolesDemo.Controllers
                 return View(role);
             }
 
-            _roleRepo.DeleteRole(id);
+            bool deleted = _roleRepo.DeleteRole(id);
+            if (!deleted)
+            {
+                var role = _roleRepo.GetRoleById(id);
+                ModelState.AddModelError("", "Role deletion failed. Please try again.");
+                return View(role);
+            }
+
             return RedirectToAction(nameof(Index));
         }
     }
