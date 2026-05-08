@@ -32,7 +32,12 @@
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.RoleName)</td>
                 <td>
-                    @Html.ActionLink("Delete", "DeleteUserRole", new { email = @ViewBag.Email, roleName = item.RoleName })
+                    <form asp-action="DeleteUserRole" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="email" value="@ViewBag.Email" />
+                        <input type="hidden" name="roleName" value="@item.RoleName" />
+                        <button type="submit" class="btn btn-link p-0">Delete</button>
+                    </form>
                 </td>
             </tr>
         }

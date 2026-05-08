@@ -11,6 +11,7 @@ public class RoleRepository
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RoleRepository"/> class and creates the initial Admin role if it does not already exist.
+    /// Note: this constructor performs role-seeding via <see cref="CreateInitialRole"/>.
     /// </summary>
     /// <param name="context">The database context.</param>
     /// <param name="logger">The logger instance.</param>

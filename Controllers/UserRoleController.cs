@@ -20,6 +20,7 @@ namespace RolesDemo.Controllers
         /// <param name="userRepo">The user repository.</param>
         /// <param name="userRoleRepo">The user-role repository.</param>
         /// <param name="myUserRepo">The registered user repository.</param>
+        /// <param name="roleRepo">The role repository.</param>
         public UserRoleController(
             UserRepository userRepo,
             UserRoleRepository userRoleRepo,
@@ -99,7 +100,8 @@ namespace RolesDemo.Controllers
         /// <param name="email">The email address of the user.</param>
         /// <param name="roleName">The role to remove.</param>
         /// <returns>The Detail view with status message.</returns>
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUserRole(string email, string roleName)
         {
             bool success = await _userRoleRepo.RemoveUserRoleAsync(email, roleName);
