@@ -65,6 +65,7 @@ namespace RolesDemo.Controllers
             }
             return View(roleVM);
         }
+
         /// <summary>
         /// Displays the role deletion confirmation page.
         /// </summary>
@@ -88,6 +89,7 @@ namespace RolesDemo.Controllers
         /// <param name="id">The ID of the role to delete.</param>
         /// <returns>Redirects to Index on success; redisplays the Delete view with an error if the role is assigned to users.</returns>
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string id)
         {
             if (_roleRepo.IsRoleAssigned(id))

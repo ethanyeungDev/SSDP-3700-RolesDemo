@@ -10,7 +10,7 @@ public class RoleRepository
     private readonly ILogger<RoleRepository> _logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RoleRepository"/> class and ensures the initial Admin role exists if it does not already exist.
+    /// Initializes a new instance of the <see cref="RoleRepository"/> class and creates the initial Admin role if it does not already exist.
     /// </summary>
     /// <param name="context">The database context.</param>
     /// <param name="logger">The logger instance.</param>
@@ -92,7 +92,8 @@ public class RoleRepository
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting role with ID {RoleId}.", roleId);
+            string safeRoleId = SanitizeForLog(roleId);
+            _logger.LogError(ex, "Error deleting role with ID {RoleId}.", safeRoleId);
             return false;
         }
     }
@@ -140,9 +141,15 @@ public class RoleRepository
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating role {RoleName}.", roleName);
+            string safeRoleName = SanitizeForLog(roleName);
+            _logger.LogError(ex, "Error creating role {RoleName}.", safeRoleName);
             return false;
         }
+    }
+
+    private static string SanitizeForLog(string value)
+    {
+        return value.Replace("\r", string.Empty).Replace("\n", string.Empty);
     }
 
     /// <summary>
