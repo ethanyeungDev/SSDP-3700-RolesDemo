@@ -7,6 +7,10 @@ namespace RolesDemo.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class.
+        /// </summary>
+        /// <param name="options">The database context options.</param>
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -16,6 +20,10 @@ namespace RolesDemo.Data
 
         public DbSet<MyRegisteredUser> MyRegisteredUsers { get; set; } = null!;
 
+        /// <summary>
+        /// Configures the entity model, including primary keys, property constraints, and seed data.
+        /// </summary>
+        /// <param name="modelBuilder">The model builder used to construct the entity model.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Product>(entity =>

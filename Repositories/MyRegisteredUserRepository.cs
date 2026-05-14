@@ -8,6 +8,11 @@ public class MyRegisteredUserRepository
     private readonly ApplicationDbContext _context;
     private readonly ILogger<MyRegisteredUserRepository> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MyRegisteredUserRepository"/> class.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="logger">The logger instance.</param>
     public MyRegisteredUserRepository(
         ApplicationDbContext context,
         ILogger<MyRegisteredUserRepository> logger)
@@ -16,6 +21,30 @@ public class MyRegisteredUserRepository
         _logger = logger;
     }
 
+    /// <summary>
+    /// Returns the first and last name of the registered user with the specified email address.
+    /// </summary>
+    /// <param name="email">The email address to look up.</param>
+    /// <returns>A tuple of (FirstName, LastName), or empty strings if not found.</returns>
+    public (string FirstName, string LastName) GetNameByEmail(string email)
+    {
+        var user = _context.MyRegisteredUsers
+            .FirstOrDefault(u => u.Email == email);
+
+        if (user != null)
+        {
+            return (user.FirstName, user.LastName);
+        }
+
+        return (string.Empty, string.Empty);
+    }
+
+    /// <summary>
+    /// Adds a new registered user record to the database.
+    /// </summary>
+    /// <param name="email">The user's email address.</param>
+    /// <param name="firstName">The user's first name.</param>
+    /// <param name="lastName">The user's last name (optional).</param>
     public void AddRegisteredUser(string email,
         string firstName,
         string? lastName = null)
